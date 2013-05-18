@@ -1,0 +1,21 @@
+{
+  "name": "redwah-server",
+  "version": "0.0.0",
+  "description": "server for redwah project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jarofghosts/redwah-server.git"
+  },
+  "keywords": [
+    "redwah",
+    "api",
+    "server"
+  ],
+  "author": "jesse keane",
+  "license": "BSD",
+  "readmeFilename": "README.md"
+}
