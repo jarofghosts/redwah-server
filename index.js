@@ -1,7 +1,7 @@
 var router = require('ramrod')(),
   http = require('http'),
   couchdb = require('felix-couchdb'),
-  client = couchdb.createClient(5984, 'localhost'),
+  client = couchdb.createClient(),
   db = client.db('redwah');
 
 router.on('postList', function (req, res, params) {
