@@ -2,10 +2,19 @@ var router = require('ramrod')(),
   http = require('http'),
   couchdb = require('felix-couchdb'),
   client = couchdb.createClient(),
-  db = client.db('redwah');
+  db = client.db('redwah'),
+  redwah = {
+    version: "0.0.1"
+  };
 
 router.on('postList', function (req, res, params) {
-  res.writeHead(200).end('wee');
+  res.writeHead(200)
+  res.end('wee');
+});
+
+router.on('*', function (req, res) {
+  res.writeHead(200);
+  res.end(JSON.stringify(redwah));
 });
 
 // Enumerate routes
@@ -16,8 +25,13 @@ router.on('postList', function (req, res, params) {
   });
 });
 
-db.create(function (err) {
-  if (err) { throw err; }
+db.exists(function (dbExists) {
+  if (!dbExists) {
+    db.create(function (err) {
+      if (err) { throw err; }
+      console.log('redwah db created');
+    });
+  }
 });
 
 http.createServer(function (req, res) {
