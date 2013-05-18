@@ -4,6 +4,10 @@ var router = require('ramrod')(),
   client = couchdb.createClient(5984, 'localhost'),
   db = client.db('redwah');
 
+router.on('postList', function (req, res, params) {
+  res.writeHead(200).end('wee');
+});
+
 // Enumerate routes
 
 ['list', 'item'].forEach(function (obj) {
