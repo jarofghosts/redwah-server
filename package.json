@@ -11,7 +11,8 @@
     "url": "git://github.com/jarofghosts/redwah-server.git"
   },
   "dependencies": {
-    "ramrod": "*"
+    "ramrod": "*",
+    "felix-couchdb": "*"
   },
   "keywords": [
     "redwah",
