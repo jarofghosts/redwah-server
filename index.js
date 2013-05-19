@@ -31,7 +31,16 @@ router.on('postitem|post', function (req, res) {
   });
 });
 
+router.on('getitem|get', function (req, res, params) {
+});
+
 router.on('putitem|put', function (req, res, params) {
+});
+
+router.on('delitem|del', function (req, res, params) {
+});
+
+router.on('dellist|del', function (req, res, params) {
 });
 
 router.on('postlist|post', function (req, res) {
