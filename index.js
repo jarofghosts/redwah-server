@@ -16,7 +16,7 @@ router.on('putlist|put', function (req, res) {
   db.getDoc(params.id, function (err, previousDoc) {
     if (err) { return web.sendError(res, 404); }
     db.saveDoc(params, function (err, doc) {
-      if (err) { return web.sendError(res, 500);
+      if (err) { return web.sendError(res, 500); }
       res.writeHead(200);
       res.end(JSON.stringify(doc));
       if (previousDoc.rows.toString() != doc.rows.toString()) {
