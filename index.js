@@ -17,6 +17,7 @@ router.on('postlist|post', function (req, res) {
       var listDocument = {
         "name": params.name,
         "items": [],
+        "rows": [],
         "createdAt": new Date().getTime(),
         "lastUpdated": new Date().getTime()
       };
