@@ -33,23 +33,44 @@ router.on('postitem|post', function (req, res) {
       db.saveDoc(params, function (err, itemDoc) {
         res.writeHead(201);
         res.end(JSON.stringify(itemDoc));
-        listDoc.items.push(itemDoc._id);
-        saveDoc(listDoc);
+        listDoc.items.push(itemDoc.id);
+        db.saveDoc(listDoc);
       });
     });
   });
 });
 
 router.on('getitem|get', function (req, res, params) {
+  db.getDoc(params.id, function (err, doc) {
+    if (err) { return web.sendError(res, 404); }
+    res.writeHead(200);
+    res.end(JSON.stringify(doc));
+  });
 });
 
 router.on('putitem|put', function (req, res, params) {
 });
 
 router.on('delitem|del', function (req, res, params) {
+  db.getDoc(params.id, function (err, doc) {
+    if (err) { return web.sendError(res, 404); }
+    db.removeDoc(doc.id, doc.rev, function (err) {
+      if (err) { return web.sendError(res, 500); }
+      res.writeHead(200);
+      res.end(JSON.stringify({ "ok": true });
+    });
+  });
 });
 
 router.on('dellist|del', function (req, res, params) {
+  db.getDoc(params.id, function (err, doc) {
+    if (err) { return web.sendError(res, 404); }
+    db.removeDoc(doc.id, doc.rev, function (err) {
+      if (err) { return web.sendError(res, 404); }
+      res.writeHead(200);
+      res.end(JSON.stringify({ "ok": true });
+    });
+  });
 });
 
 router.on('postlist|post', function (req, res) {
