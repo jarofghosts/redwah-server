@@ -57,7 +57,7 @@ router.on('delitem|del', function (req, res, params) {
     db.removeDoc(doc.id, doc.rev, function (err) {
       if (err) { return web.sendError(res, 500); }
       res.writeHead(200);
-      res.end(JSON.stringify({ "ok": true });
+      res.end(JSON.stringify({ "ok": true }));
     });
   });
 });
@@ -68,7 +68,7 @@ router.on('dellist|del', function (req, res, params) {
     db.removeDoc(doc.id, doc.rev, function (err) {
       if (err) { return web.sendError(res, 404); }
       res.writeHead(200);
-      res.end(JSON.stringify({ "ok": true });
+      res.end(JSON.stringify({ "ok": true }));
     });
   });
 });
