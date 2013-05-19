@@ -9,8 +9,12 @@ var router = require('ramrod')(),
   };
 
 router.on('postlist|post', function (req, res) {
-  redwahlib.processPost(req, function (params) {
-    res.writeHead(200);
+  redwahlib.processPost(req, function (err, params) {
+    if (err) {
+      res.writeHead(err);
+    } else {
+      res.writeHead(200);
+    }
     res.end(JSON.stringify(params));
   });
 });
