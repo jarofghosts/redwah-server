@@ -1,18 +1,27 @@
 var router = require('ramrod')(),
   http = require('http'),
   couchdb = require('felix-couchdb'),
-  redwahlib = require('./lib/redwah.js'),
+  web = require('./lib/web.js'),
   client = couchdb.createClient(),
   db = client.db('redwah'),
   redwah = {
     version: "0.0.1"
   };
 
+// Route handler
+
+router.on('putlist|put', function (req, res) {
+  redwahlib.processPost(req, function(err, params) {
+    db.getDoc(params.id, function (err, previousDoc) {
+      if (err) { return web.sendError(res, 404); }
+      
+    });
+  });
+});
+
 router.on('postlist|post', function (req, res) {
-  redwahlib.processPost(req, function (err, params) {
-    if (err) {
-      res.writeHead(err);
-      res.end(JSON.stringify(params));
+  web.processPost(req, function (err, params) {
+    if (err) { return web.sendError(res, err); }
     } else {
       var listDocument = {
         "name": params.name,
@@ -32,13 +41,9 @@ router.on('postlist|post', function (req, res) {
 router.on('getlist|get', function (req, res, params) {
   res.writeHead(200);
   db.getDoc(params.id, function (err, doc) {
-    if (err) {
-      res.writeHead(404);
-      res.end(JSON.stringify({ "error": "Unable to locate resource."}));
-    } else {
-      res.writeHead(200);
-      res.end(JSON.stringify(doc));
-    }
+    if (err) { return web.sendError(res, 404); }
+    res.writeHead(200);
+    res.end(JSON.stringify(doc));
   });
 });
 
