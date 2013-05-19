@@ -7,9 +7,14 @@ var router = require('ramrod')(),
     version: "0.0.1"
   };
 
-router.on('postList', function (req, res, params) {
-  res.writeHead(200)
-  res.end('wee');
+router.on('postlist|post', function (req, res, d, params) {
+  res.writeHead(200);
+  res.end(JSON.stringify(params));
+});
+
+router.on('getlist|get', function (req, res, params) {
+  res.writeHead(200);
+  res.end('list!');
 });
 
 router.on('*', function (req, res) {
@@ -26,9 +31,10 @@ router.on('*', function (req, res) {
 });
 
 db.exists(function (dbExists) {
-  if (!dbExists) {
+  if (dbExists) {
+    console.log('db does not exist');
     db.create(function (err) {
-      if (err) { throw err; }
+      if (err) { throw new Error (JSON.stringify(err)); }
       console.log('redwah db created');
     });
   }
