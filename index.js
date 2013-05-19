@@ -55,19 +55,17 @@ router.on('dellist|del', function (req, res, params) {
 router.on('postlist|post', function (req, res) {
   form.parse(req, function (err, params) {
     if (err) { return web.sendError(res, 500); }
-    } else {
-      var listDocument = {
-        "name": params.name,
-        "items": [],
-        "rows": [],
-        "createdAt": new Date().getTime(),
-        "lastUpdated": new Date().getTime()
-      };
-      db.saveDoc(listDocument, function (err, doc) {
-        res.writeHead(201);
-        res.end(JSON.stringify(doc));
-      });
-    }
+    var listDocument = {
+      "name": params.name,
+      "items": [],
+      "rows": [],
+      "createdAt": new Date().getTime(),
+      "lastUpdated": new Date().getTime()
+    };
+    db.saveDoc(listDocument, function (err, doc) {
+      res.writeHead(201);
+      res.end(JSON.stringify(doc));
+    });
   });
 });
 
