@@ -20,7 +20,6 @@ router.on('postlist|post', function (req, res) {
         "createdAt": new Date().getTime(),
         "lastUpdated": new Date().getTime()
       };
-      console.log('got post request');
       db.saveDoc(listDocument, function (err, doc) {
         res.writeHead(201);
         res.end(JSON.stringify(doc));
