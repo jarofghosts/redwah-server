@@ -1,9 +1,10 @@
 var router = require('ramrod')(),
+  form = require('formidable').IncomingForm(),
   http = require('http'),
   couchdb = require('felix-couchdb'),
-  web = require('./lib/web.js'),
   client = couchdb.createClient(),
   db = client.db('redwah'),
+  web = require('./lib/web.js'),
   redwah = {
     version: "0.0.1"
   };
@@ -11,7 +12,7 @@ var router = require('ramrod')(),
 // Route handler
 
 router.on('putlist|put', function (req, res) {
-  redwahlib.processPost(req, function(err, params) {
+  form.parse(req, function(err, params) {
     db.getDoc(params.id, function (err, previousDoc) {
       if (err) { return web.sendError(res, 404); }
       
@@ -20,7 +21,7 @@ router.on('putlist|put', function (req, res) {
 });
 
 router.on('postlist|post', function (req, res) {
-  web.processPost(req, function (err, params) {
+  form.parse(req, function (err, params) {
     if (err) { return web.sendError(res, err); }
     } else {
       var listDocument = {
