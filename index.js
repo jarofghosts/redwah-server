@@ -30,8 +30,8 @@ router.on('*', function (req, res) {
   });
 });
 
-db.exists(function (dbExists) {
-  if (dbExists) {
+db.exists(function (err, dbExists) {
+  if (!dbExists) {
     console.log('db does not exist');
     db.create(function (err) {
       if (err) { throw new Error (JSON.stringify(err)); }
