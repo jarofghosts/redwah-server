@@ -5,6 +5,7 @@ var router = require('ramrod')(),
   client = couchdb.createClient(),
   db = client.db('redwah'),
   web = require('./lib/web.js'),
+  rwlib = require('./lib/redwah.js'),
   redwah = {
     version: "0.0.1"
   };
@@ -15,14 +16,21 @@ router.on('putlist|put', function (req, res) {
   form.parse(req, function(err, params) {
     db.getDoc(params.id, function (err, previousDoc) {
       if (err) { return web.sendError(res, 404); }
-      
+      db.saveDoc(params, function (err, doc) {
+        if (err) { return web.sendError(res, 500);
+        res.writeHead(200);
+        res.end(JSON.stringify(doc));
+        if (previousDoc.rows.toString() != doc.rows.toString()) {
+          rwlib.updateItems(doc.rows, doc.items);
+        }
+      });
     });
   });
 });
 
 router.on('postlist|post', function (req, res) {
   form.parse(req, function (err, params) {
-    if (err) { return web.sendError(res, err); }
+    if (err) { return web.sendError(res, 500); }
     } else {
       var listDocument = {
         "name": params.name,
