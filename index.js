@@ -20,7 +20,7 @@ router.on('putlist|put', function (req, res) {
       res.writeHead(200);
       res.end(JSON.stringify(doc));
       if (previousDoc.rows.toString() != doc.rows.toString()) {
-        rwlib.updateItems(doc.rows, doc.items);
+        rwlib.updateItems(db, doc.rows, doc.items);
       }
     });
   });
@@ -28,6 +28,15 @@ router.on('putlist|put', function (req, res) {
 
 router.on('postitem|post', function (req, res) {
   form.parse(req, function (err, params) {
+    db.getDoc(params.listId, function (err, listDoc) {
+      if (err) { return web.sendError(res, 404); }
+      db.saveDoc(params, function (err, itemDoc) {
+        res.writeHead(201);
+        res.end(JSON.stringify(itemDoc));
+        listDoc.items.push(itemDoc._id);
+        saveDoc(listDoc);
+      });
+    });
   });
 });
 
