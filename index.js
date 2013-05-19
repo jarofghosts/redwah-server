@@ -12,16 +12,34 @@ router.on('postlist|post', function (req, res) {
   redwahlib.processPost(req, function (err, params) {
     if (err) {
       res.writeHead(err);
+      res.end(JSON.stringify(params));
     } else {
-      res.writeHead(200);
+      var listDocument = {
+        "name": params.name,
+        "items": [],
+        "createdAt": new Date().getTime(),
+        "lastUpdated": new Date().getTime()
+      };
+      console.log('got post request');
+      db.saveDoc(listDocument, function (err, doc) {
+        res.writeHead(201);
+        res.end(JSON.stringify(doc));
+      });
     }
-    res.end(JSON.stringify(params));
   });
 });
 
 router.on('getlist|get', function (req, res, params) {
   res.writeHead(200);
-  res.end('list!');
+  db.getDoc(params.id, function (err, doc) {
+    if (err) {
+      res.writeHead(404);
+      res.end(JSON.stringify({ "error": "Unable to locate resource."}));
+    } else {
+      res.writeHead(200);
+      res.end(JSON.stringify(doc));
+    }
+  });
 });
 
 router.on('*', function (req, res) {
