@@ -1,7 +1,7 @@
 var router = require('ramrod')(),
   http = require('http'),
   couchdb = require('felix-couchdb'),
-  redwah = require('./lib/redwah.js'),
+  redwahlib = require('./lib/redwah.js'),
   client = couchdb.createClient(),
   db = client.db('redwah'),
   redwah = {
@@ -9,9 +9,9 @@ var router = require('ramrod')(),
   };
 
 router.on('postlist|post', function (req, res) {
-  redwah.processPost(req, function (params) {
+  redwahlib.processPost(req, function (params) {
     res.writeHead(200);
-    res.send(JSON.stringify(params));
+    res.end(JSON.stringify(params));
   });
 });
 
