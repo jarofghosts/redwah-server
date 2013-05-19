@@ -7,7 +7,8 @@ var router = require('ramrod')(),
   web = require('./lib/web.js'),
   rwlib = require('./lib/redwah.js'),
   redwah = {
-    version: "0.0.1"
+    version: "0.0.1",
+    description: "dont trust your gut: make decisions with numbers!"
   };
 
 // Route handler
@@ -49,6 +50,11 @@ router.on('getitem|get', function (req, res, params) {
 });
 
 router.on('putitem|put', function (req, res, params) {
+  db.saveDoc(params, function (err, doc) {
+    if (err) { return web.sendError(res, 404); }
+    res.writeHead(200);
+    res.end(JSON.stringify(doc));
+  });
 });
 
 router.on('delitem|del', function (req, res, params) {
