@@ -13,19 +13,25 @@ var router = require('ramrod')(),
 // Route handler
 
 router.on('putlist|put', function (req, res) {
-  form.parse(req, function(err, params) {
-    db.getDoc(params.id, function (err, previousDoc) {
-      if (err) { return web.sendError(res, 404); }
-      db.saveDoc(params, function (err, doc) {
-        if (err) { return web.sendError(res, 500);
-        res.writeHead(200);
-        res.end(JSON.stringify(doc));
-        if (previousDoc.rows.toString() != doc.rows.toString()) {
-          rwlib.updateItems(doc.rows, doc.items);
-        }
-      });
+  db.getDoc(params.id, function (err, previousDoc) {
+    if (err) { return web.sendError(res, 404); }
+    db.saveDoc(params, function (err, doc) {
+      if (err) { return web.sendError(res, 500);
+      res.writeHead(200);
+      res.end(JSON.stringify(doc));
+      if (previousDoc.rows.toString() != doc.rows.toString()) {
+        rwlib.updateItems(doc.rows, doc.items);
+      }
     });
   });
+});
+
+router.on('postitem|post', function (req, res) {
+  form.parse(req, function (err, params) {
+  });
+});
+
+router.on('putitem|put', function (req, res, params) {
 });
 
 router.on('postlist|post', function (req, res) {
