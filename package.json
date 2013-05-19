@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "ramrod": "*",
-    "felix-couchdb": "*"
+    "felix-couchdb": "*",
+    "formidable": "*"
   },
   "keywords": [
     "redwah",
