@@ -5,7 +5,6 @@ var router = require('ramrod')(),
   client = couchdb.createClient(),
   db = client.db('redwah'),
   web = require('./lib/web.js'),
-  rwlib = require('./lib/redwah.js'),
   redwah = {
     version: "0.0.1",
     description: "dont trust your gut: make decisions with numbers!"
@@ -20,9 +19,6 @@ router.on('putlist|put', function (req, res) {
       if (err) { return web.sendError(res, 500); }
       res.writeHead(200);
       res.end(JSON.stringify(doc));
-      if (previousDoc.rows.toString() != doc.rows.toString()) {
-        rwlib.updateItems(db, doc.rows, doc.items);
-      }
     });
   });
 });
@@ -85,7 +81,7 @@ router.on('postlist|post', function (req, res) {
     var listDocument = {
       "name": params.name,
       "items": [],
-      "rows": [],
+      "qualities": [],
       "createdAt": new Date().getTime(),
       "lastUpdated": new Date().getTime()
     };
