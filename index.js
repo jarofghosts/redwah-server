@@ -21,7 +21,14 @@ router.on('putlist|put', function (req, res) {
   form.parse(req, function (err, params) {
     db.getDoc(params.id, function (err, previousDoc) {
       if (err) { return web.sendError(res, 404, headers); }
-      db.saveDoc(params, function (err, doc) {
+      db.saveDoc({
+        "_id": params.id,
+        "_rev": params.rev,
+        "qualities": params.qualities,
+        "items": params.items,
+        "name": params.name,
+        "lastModified": new Date().getTime()
+      }, function (err, doc) {
         if (err) { return web.sendError(res, 500, headers); }
         res.writeHead(200, headers);
         res.end(JSON.stringify(doc));
