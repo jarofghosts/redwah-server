@@ -45,7 +45,7 @@ router.on('postitem|post', function (req, res) {
 });
 
 router.on('getitem|get', function (req, res, params) {
-  db.getDoc(params.id, function (err, doc) {
+  db.getDoc(params.id, params.rev, function (err, doc) {
     if (err) { return web.sendError(res, 404); }
     res.writeHead(200, headers);
     res.end(JSON.stringify(doc));
