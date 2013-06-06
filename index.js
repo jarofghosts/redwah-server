@@ -8,6 +8,10 @@ var router = require('ramrod')(),
   redwah = {
     version: "0.0.1",
     description: "dont trust your gut: make decisions with numbers!"
+  },
+  headers = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "X-Requested-With, Access-Control-Allow-Origin, X-HTTP-Method-Override, Content-Type, Authorization, Accept"
   };
 
 // Route handler
@@ -17,7 +21,7 @@ router.on('putlist|put', function (req, res) {
     if (err) { return web.sendError(res, 404); }
     db.saveDoc(params, function (err, doc) {
       if (err) { return web.sendError(res, 500); }
-      res.writeHead(200);
+      res.writeHead(200, headers);
       res.end(JSON.stringify(doc));
     });
   });
@@ -28,7 +32,7 @@ router.on('postitem|post', function (req, res) {
     db.getDoc(params.listId, function (err, listDoc) {
       if (err) { return web.sendError(res, 404); }
       db.saveDoc(params, function (err, itemDoc) {
-        res.writeHead(201);
+        res.writeHead(201, headers);
         res.end(JSON.stringify(itemDoc));
         listDoc.items.push(itemDoc.id);
         db.saveDoc(listDoc);
@@ -40,7 +44,7 @@ router.on('postitem|post', function (req, res) {
 router.on('getitem|get', function (req, res, params) {
   db.getDoc(params.id, function (err, doc) {
     if (err) { return web.sendError(res, 404); }
-    res.writeHead(200);
+    res.writeHead(200, headers);
     res.end(JSON.stringify(doc));
   });
 });
@@ -48,7 +52,7 @@ router.on('getitem|get', function (req, res, params) {
 router.on('putitem|put', function (req, res, params) {
   db.saveDoc(params, function (err, doc) {
     if (err) { return web.sendError(res, 404); }
-    res.writeHead(200);
+    res.writeHead(200, headers);
     res.end(JSON.stringify(doc));
   });
 });
@@ -58,7 +62,7 @@ router.on('delitem|del', function (req, res, params) {
     if (err) { return web.sendError(res, 404); }
     db.removeDoc(doc.id, doc.rev, function (err) {
       if (err) { return web.sendError(res, 500); }
-      res.writeHead(200);
+      res.writeHead(200, headers);
       res.end(JSON.stringify({ "ok": true }));
     });
   });
@@ -69,7 +73,7 @@ router.on('dellist|del', function (req, res, params) {
     if (err) { return web.sendError(res, 404); }
     db.removeDoc(doc.id, doc.rev, function (err) {
       if (err) { return web.sendError(res, 404); }
-      res.writeHead(200);
+      res.writeHead(200, headers);
       res.end(JSON.stringify({ "ok": true }));
     });
   });
@@ -86,7 +90,7 @@ router.on('postlist|post', function (req, res) {
       "lastUpdated": new Date().getTime()
     };
     db.saveDoc(listDocument, function (err, doc) {
-      res.writeHead(201);
+      res.writeHead(201, headers);
       res.end(JSON.stringify(doc));
     });
   });
@@ -96,13 +100,13 @@ router.on('getlist|get', function (req, res, params) {
   res.writeHead(200);
   db.getDoc(params.id, function (err, doc) {
     if (err) { return web.sendError(res, 404); }
-    res.writeHead(200);
+    res.writeHead(200, headers);
     res.end(JSON.stringify(doc));
   });
 });
 
 router.on('*', function (req, res) {
-  res.writeHead(200);
+  res.writeHead(200, headers);
   res.end(JSON.stringify(redwah));
 });
 
