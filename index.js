@@ -9,10 +9,11 @@ var router = require('ramrod')(),
     version: "0.0.1",
     description: "dont trust your gut: make decisions with numbers!"
   },
-  headers = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "X-Requested-With, Access-Control-Allow-Origin, X-HTTP-Method-Override, Content-Type, Authorization, Accept"
-  };
+  headers = {};
+
+headers["Access-Control-Allow-Origin"] = "*";
+headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
+headers["Access-Control-Allow-Headers"] = "X-Requested-With, Access-Control-Allow-Origin, X-HTTP-Method-Override, Content-Type, Authorization, Accept"
 
 // Route handler
 
@@ -130,7 +131,7 @@ db.exists(function (err, dbExists) {
 
 http.createServer(function (req, res) {
   if (req.method === 'OPTIONS') {
-    res.writeHead(200, headers);
+    res.writeHead(204, headers);
     res.end();
   } else {
     router.dispatch(req, res);
