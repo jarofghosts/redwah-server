@@ -129,5 +129,10 @@ db.exists(function (err, dbExists) {
 });
 
 http.createServer(function (req, res) {
-  router.dispatch(req, res);
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200, headers);
+    res.end();
+  } else {
+    router.dispatch(req, res);
+  }
 }).listen(3000);
