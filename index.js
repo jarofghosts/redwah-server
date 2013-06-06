@@ -17,7 +17,7 @@ headers["Access-Control-Allow-Headers"] = "X-Requested-With, Access-Control-Allo
 
 // Route handler
 
-router.on('putlist|put', function (req, res) {
+router.on('putlist|put', function (req, res, params) {
   db.getDoc(params.id, function (err, previousDoc) {
     if (err) { return web.sendError(res, 404); }
     db.saveDoc(params, function (err, doc) {
