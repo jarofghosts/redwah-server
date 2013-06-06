@@ -17,13 +17,15 @@ headers["Access-Control-Allow-Headers"] = "X-Requested-With, Access-Control-Allo
 
 // Route handler
 
-router.on('putlist|put', function (req, res, params) {
-  db.getDoc(params.id, function (err, previousDoc) {
-    if (err) { return web.sendError(res, 404); }
-    db.saveDoc(params, function (err, doc) {
-      if (err) { return web.sendError(res, 500); }
-      res.writeHead(200, headers);
-      res.end(JSON.stringify(doc));
+router.on('putlist|put', function (req, res) {
+  form.parse(req, function (err, params) {
+    db.getDoc(params.id, function (err, previousDoc) {
+      if (err) { return web.sendError(res, 404, headers); }
+      db.saveDoc(params, function (err, doc) {
+        if (err) { return web.sendError(res, 500, headers); }
+        res.writeHead(200, headers);
+        res.end(JSON.stringify(doc));
+      });
     });
   });
 });
@@ -31,7 +33,7 @@ router.on('putlist|put', function (req, res, params) {
 router.on('postitem|post', function (req, res) {
   form.parse(req, function (err, params) {
     db.getDoc(params.listId, function (err, listDoc) {
-      if (err) { return web.sendError(res, 404); }
+      if (err) { return web.sendError(res, 404, headers); }
       db.saveDoc(params, function (err, itemDoc) {
         res.writeHead(201, headers);
         res.end(JSON.stringify(itemDoc));
@@ -71,9 +73,9 @@ router.on('delitem|del', function (req, res, params) {
 
 router.on('dellist|del', function (req, res, params) {
   db.getDoc(params.id, function (err, doc) {
-    if (err) { return web.sendError(res, 404); }
+    if (err) { return web.sendError(res, 404, headers); }
     db.removeDoc(doc.id, doc.rev, function (err) {
-      if (err) { return web.sendError(res, 404); }
+      if (err) { return web.sendError(res, 404, headers); }
       res.writeHead(200, headers);
       res.end(JSON.stringify({ "ok": true }));
     });
@@ -82,7 +84,7 @@ router.on('dellist|del', function (req, res, params) {
 
 router.on('postlist|post', function (req, res) {
   form.parse(req, function (err, params) {
-    if (err) { return web.sendError(res, 500); }
+    if (err) { return web.sendError(res, 500, headers); }
     var listDocument = {
       "name": params.name,
       "items": [],
@@ -100,7 +102,7 @@ router.on('postlist|post', function (req, res) {
 router.on('getlist|get', function (req, res, params) {
   res.writeHead(200);
   db.getDoc(params.id, function (err, doc) {
-    if (err) { return web.sendError(res, 404); }
+    if (err) { return web.sendError(res, 404, headers); }
     res.writeHead(200, headers);
     res.end(JSON.stringify(doc));
   });
