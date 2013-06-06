@@ -30,47 +30,6 @@ router.on('putlist|put', function (req, res) {
   });
 });
 
-router.on('postitem|post', function (req, res) {
-  form.parse(req, function (err, params) {
-    db.getDoc(params.listId, function (err, listDoc) {
-      if (err) { return web.sendError(res, 404, headers); }
-      db.saveDoc(params, function (err, itemDoc) {
-        res.writeHead(201, headers);
-        res.end(JSON.stringify(itemDoc));
-        listDoc.items.push(itemDoc.id);
-        db.saveDoc(listDoc);
-      });
-    });
-  });
-});
-
-router.on('getitem|get', function (req, res, params) {
-  db.getDoc(params.id, params.rev, function (err, doc) {
-    if (err) { return web.sendError(res, 404); }
-    res.writeHead(200, headers);
-    res.end(JSON.stringify(doc));
-  });
-});
-
-router.on('putitem|put', function (req, res, params) {
-  db.saveDoc(params, function (err, doc) {
-    if (err) { return web.sendError(res, 404); }
-    res.writeHead(200, headers);
-    res.end(JSON.stringify(doc));
-  });
-});
-
-router.on('delitem|del', function (req, res, params) {
-  db.getDoc(params.id, function (err, doc) {
-    if (err) { return web.sendError(res, 404); }
-    db.removeDoc(doc.id, doc.rev, function (err) {
-      if (err) { return web.sendError(res, 500); }
-      res.writeHead(200, headers);
-      res.end(JSON.stringify({ "ok": true }));
-    });
-  });
-});
-
 router.on('dellist|del', function (req, res, params) {
   db.getDoc(params.id, function (err, doc) {
     if (err) { return web.sendError(res, 404, headers); }
@@ -115,10 +74,8 @@ router.on('*', function (req, res) {
 
 // Enumerate routes
 
-['list', 'item'].forEach(function (obj) {
-  ['post', 'get', 'put', 'del'].forEach(function (method) {
-    router[method](obj, method + obj);
-  });
+['post', 'get', 'put', 'del'].forEach(function (method) {
+  router[method]('list', method + 'list');
 });
 
 db.exists(function (err, dbExists) {
