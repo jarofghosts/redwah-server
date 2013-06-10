@@ -3,7 +3,7 @@ var router = require('ramrod')(),
   db = require('./lib/couch.js'),
   web = require('./lib/web.js'),
   redwah = {
-    version: "0.0.4",
+    version: "0.0.5",
     description: "dont trust your gut: make decisions with numbers!"
   },
   headers = {};
