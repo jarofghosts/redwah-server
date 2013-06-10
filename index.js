@@ -48,14 +48,14 @@ router.on('dellist|del', function (req, res, params) {
 });
 
 router.on('postlist|post', function (req, res) {
+  console.log('post');
   form.parse(req, function (err, params) {
     if (err) { return web.sendError(res, 500, headers); }
-    if (Object.keys(params).length > 1) { return false; }
+    //if (Object.keys(params).length > 1) { return false; }
     var listDocument = {
       "name": params.name
     };
     db.insert(listDocument, function (err, doc) {
-      console.log('post request');
       res.writeHead(201, headers);
       res.end(JSON.stringify(doc));
     });
