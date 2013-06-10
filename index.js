@@ -1,11 +1,10 @@
 var router = require('ramrod')(),
   form = require('formidable').IncomingForm(),
   http = require('http'),
-  client = require('nano')('http://localhost:5984'),
-  db = client.db.use('redwah'),
+  db = require('./lib/couch.js'),
   web = require('./lib/web.js'),
   redwah = {
-    version: "0.0.1",
+    version: "0.0.3",
     description: "dont trust your gut: make decisions with numbers!"
   },
   headers = {};
@@ -17,23 +16,21 @@ headers["Access-Control-Allow-Headers"] = "X-Requested-With, Access-Control-Allo
 // Route handler
 
 router.on('putlist|put', function (req, res) {
+  console.log('put');
   form.parse(req, function (err, params) {
-    db.get(params.id, function (err, doc) {
-      db.insert({
-        "_rev": doc._rev,
-        "qualities": params.qualities,
-        "items": params.items,
-        "name": params.name,
-        "lastModified": new Date().getTime()
-      }, params.id, function (err, doc) {
-        if (err) {
-          console.log(err);
-          return web.sendError(res, 500, headers);
-        }
-        console.log('put request');
-        res.writeHead(200, headers);
-        res.end(JSON.stringify(doc));
-      });
+    db.insert(params.id, {
+      "_rev": params.rev,
+      "qualities": params.qualities,
+      "items": params.items,
+      "name": params.name,
+      "lastModified": new Date().getTime()
+    }, function (err, doc) {
+      if (err) {
+        console.log(err);
+        return web.sendError(res, 500, headers);
+      }
+      res.writeHead(200, headers);
+      res.end(JSON.stringify(doc));
     });
   });
 });
@@ -55,7 +52,7 @@ router.on('postlist|post', function (req, res) {
     if (err) { return web.sendError(res, 500, headers); }
     if (Object.keys(params).length > 1) { return false; }
     var listDocument = {
-      "name": params.name,
+      "name": params.name
     };
     db.insert(listDocument, function (err, doc) {
       console.log('post request');
@@ -86,10 +83,10 @@ router.on('*', function (req, res) {
   router[method]('list', method + 'list');
 });
 
-client.db.get('redwah', function (err, db) {
-  if (err) {
+db.check('redwah', function (err, db) {
+  if (!db) {
     console.log('db does not exist');
-    client.db.create(function (err) {
+    db.create(function (err) {
       if (err) { throw new Error (JSON.stringify(err)); }
       console.log('redwah db created');
     });
