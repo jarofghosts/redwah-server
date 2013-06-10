@@ -1,10 +1,9 @@
 var router = require('ramrod')(),
-  form = require('formidable').IncomingForm(),
   http = require('http'),
   db = require('./lib/couch.js'),
   web = require('./lib/web.js'),
   redwah = {
-    version: "0.0.3",
+    version: "0.0.4",
     description: "dont trust your gut: make decisions with numbers!"
   },
   headers = {};
@@ -15,9 +14,10 @@ headers["Access-Control-Allow-Headers"] = "X-Requested-With, Access-Control-Allo
 
 // Route handler
 
-router.on('putlist|put', function (req, res) {
+router.on('putlist|put', function (req, res, params) {
   console.log('put');
-  form.parse(req, function (err, params) {
+  web.processPost(req, function (err, params) {
+    console.dir(params);
     db.insert(params.id, {
       "_rev": params.rev,
       "qualities": params.qualities,
@@ -49,7 +49,7 @@ router.on('dellist|del', function (req, res, params) {
 
 router.on('postlist|post', function (req, res) {
   console.log('post');
-  form.parse(req, function (err, params) {
+  web.processPost(req, function (err, params) {
     if (err) { return web.sendError(res, 500, headers); }
     //if (Object.keys(params).length > 1) { return false; }
     var listDocument = {
@@ -57,18 +57,19 @@ router.on('postlist|post', function (req, res) {
     };
     db.insert(listDocument, function (err, doc) {
       res.writeHead(201, headers);
-      res.end(JSON.stringify(doc));
+      res.end(doc);
     });
   });
 });
 
 router.on('getlist|get', function (req, res, params) {
+  console.log('get');
   res.writeHead(200);
   db.get(params.id, function (err, doc) {
     if (err) { return web.sendError(res, 404, headers); }
     console.log('get request');
     res.writeHead(200, headers);
-    res.end(JSON.stringify(doc));
+    res.end(doc);
   });
 });
 
