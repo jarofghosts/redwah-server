@@ -1,9 +1,8 @@
 var router = require('ramrod')(),
   form = require('formidable').IncomingForm(),
   http = require('http'),
-  couchdb = require('felix-couchdb'),
-  client = couchdb.createClient(),
-  db = client.db('redwah'),
+  client = require('nano')('http://localhost:5984'),
+  db = client.db.use('redwah'),
   web = require('./lib/web.js'),
   redwah = {
     version: "0.0.1",
@@ -19,29 +18,32 @@ headers["Access-Control-Allow-Headers"] = "X-Requested-With, Access-Control-Allo
 
 router.on('putlist|put', function (req, res) {
   form.parse(req, function (err, params) {
-    db.saveDoc({
-      "_id": params.id,
-      "_rev": params.rev,
-      "qualities": params.qualities,
-      "items": params.items,
-      "name": params.name,
-      "lastModified": new Date().getTime()
-    }, function (err, doc) {
-      if (err) {
-        console.log(err);
-        return web.sendError(res, 500, headers);
-      }
-      res.writeHead(200, headers);
-      res.end(JSON.stringify(doc));
+    db.get(params.id, function (err, doc) {
+      db.insert({
+        "_rev": doc._rev,
+        "qualities": params.qualities,
+        "items": params.items,
+        "name": params.name,
+        "lastModified": new Date().getTime()
+      }, params.id, function (err, doc) {
+        if (err) {
+          console.log(err);
+          return web.sendError(res, 500, headers);
+        }
+        console.log('put request');
+        res.writeHead(200, headers);
+        res.end(JSON.stringify(doc));
+      });
     });
   });
 });
 
 router.on('dellist|del', function (req, res, params) {
-  db.getDoc(params.id, function (err, doc) {
+  db.get(params.id, function (err, doc) {
     if (err) { return web.sendError(res, 404, headers); }
-    db.removeDoc(doc.id, doc.rev, function (err) {
+    db.destroy(doc.id, doc.rev, function (err) {
       if (err) { return web.sendError(res, 404, headers); }
+      console.log('del request');
       res.writeHead(200, headers);
       res.end(JSON.stringify({ "ok": true }));
     });
@@ -51,14 +53,12 @@ router.on('dellist|del', function (req, res, params) {
 router.on('postlist|post', function (req, res) {
   form.parse(req, function (err, params) {
     if (err) { return web.sendError(res, 500, headers); }
+    if (Object.keys(params).length > 1) { return false; }
     var listDocument = {
       "name": params.name,
-      "items": [],
-      "qualities": [],
-      "createdAt": new Date().getTime(),
-      "lastUpdated": new Date().getTime()
     };
-    db.saveDoc(listDocument, function (err, doc) {
+    db.insert(listDocument, function (err, doc) {
+      console.log('post request');
       res.writeHead(201, headers);
       res.end(JSON.stringify(doc));
     });
@@ -67,8 +67,9 @@ router.on('postlist|post', function (req, res) {
 
 router.on('getlist|get', function (req, res, params) {
   res.writeHead(200);
-  db.getDoc(params.id, function (err, doc) {
+  db.get(params.id, function (err, doc) {
     if (err) { return web.sendError(res, 404, headers); }
+    console.log('get request');
     res.writeHead(200, headers);
     res.end(JSON.stringify(doc));
   });
@@ -85,10 +86,10 @@ router.on('*', function (req, res) {
   router[method]('list', method + 'list');
 });
 
-db.exists(function (err, dbExists) {
-  if (!dbExists) {
+client.db.get('redwah', function (err, db) {
+  if (err) {
     console.log('db does not exist');
-    db.create(function (err) {
+    client.db.create(function (err) {
       if (err) { throw new Error (JSON.stringify(err)); }
       console.log('redwah db created');
     });
