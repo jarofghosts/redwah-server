@@ -83,8 +83,9 @@ router.on('*', function (req, res) {
   router[method]('list', method + 'list');
 });
 
-db.check('redwah', function (err, db) {
-  if (!db) {
+db.check(function (err, check) {
+  console.log(check);
+  if (err) {
     console.log('db does not exist');
     db.create(function (err) {
       if (err) { throw new Error (JSON.stringify(err)); }
