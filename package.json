@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "ramrod": "*",
-    "formidable": "*"
+    "formidable": "*",
+    "request": "*"
   },
   "keywords": [
     "redwah",
