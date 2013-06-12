@@ -1,4 +1,5 @@
 redwah-server
 ===
 
-i need a server for this idea.. i'll let you know how it turns out
+Really simple server providing an API to save stuff to couchdb.
+Demo lives [here](http://science.jessekeane.me)
