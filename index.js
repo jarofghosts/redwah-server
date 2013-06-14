@@ -23,7 +23,8 @@ router.on('putlist|put', function (req, res, params) {
       "qualities": params.qualities,
       "items": params.items,
       "name": params.name,
-      "lastModified": new Date().getTime()
+      "lastModified": new Date().getTime(),
+      "finished": params.finished
     }, function (err, doc) {
       if (err) {
         console.log(err);
@@ -51,11 +52,7 @@ router.on('postlist|post', function (req, res) {
   console.log('post');
   web.processPost(req, function (err, params) {
     if (err) { return web.sendError(res, 500, headers); }
-    //if (Object.keys(params).length > 1) { return false; }
-    var listDocument = {
-      "name": params.name
-    };
-    db.insert(listDocument, function (err, doc) {
+    db.insert(params.id, { name: params.name }, function (err, doc) {
       res.writeHead(201, headers);
       res.end(JSON.stringify(doc));
     });
