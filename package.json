@@ -11,8 +11,8 @@
     "url": "git://github.com/jarofghosts/redwah-server.git"
   },
   "dependencies": {
-    "ramrod": "*",
-    "request": "*"
+    "loveseat": "*",
+    "route-emitter": "*"
   },
   "keywords": [
     "redwah",
