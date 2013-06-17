@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "loveseat": "*",
-    "route-emitter": "*"
+    "route-emitter": "*",
+    "http-params": "*"
   },
   "keywords": [
     "redwah",

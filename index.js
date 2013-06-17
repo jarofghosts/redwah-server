@@ -4,8 +4,9 @@ var Router = require('route-emitter').Router,
   Loveseat = require('loveseat').Loveseat,
   db = new Loveseat({ db: 'redwah' }),
   web = require('./lib/web.js'),
+  parse = require('http-params').parse,
   redwah = {
-    version: "0.0.6",
+    version: "0.0.7",
     description: "dont trust your gut: make decisions with numbers!"
   },
   headers = {
@@ -18,7 +19,7 @@ var Router = require('route-emitter').Router,
 
 router.on('putList', function (req, res) {
   console.log('put');
-  web.processParams(req, function (err, params) {
+  parse(req, function (err, params) {
     console.dir(params);
     db.insert(params.id, {
       "_rev": params.rev,
@@ -39,12 +40,11 @@ router.on('putList', function (req, res) {
 });
 
 router.on('deleteList', function (req, res) {
-  web.processParams(req, function (err, params) {
+  parse(req, function (err, params) {
     db.get(params.id, function (err, doc) {
       if (err) { return web.sendError(res, 404, headers); }
       db.destroy(doc.id, doc.rev, function (err) {
         if (err) { return web.sendError(res, 404, headers); }
-        console.log('del request');
         res.writeHead(200, headers);
         res.end(JSON.stringify({ "ok": true }));
       });
@@ -53,8 +53,7 @@ router.on('deleteList', function (req, res) {
 });
 
 router.on('postList', function (req, res) {
-  console.log('post');
-  web.processParams(req, function (err, params) {
+  parse(req, function (err, params) {
     if (err) { return web.sendError(res, 500, headers); }
     db.insert(params.id, { name: params.name }, function (err, doc) {
       res.writeHead(201, headers);
@@ -64,13 +63,11 @@ router.on('postList', function (req, res) {
 });
 
 router.on('getList', function (req, res, params) {
-  console.log('get');
-  web.processParams(req, function (err, params) {
+  parse(req, function (err, params) {
     db.get(params.id, function (err, doc) {
       if (err) { return web.sendError(res, 404, headers); }
-      console.log('get request');
       res.writeHead(200, headers);
-      res.end(doc);
+      res.end(JSON.stringify(doc));
     });
   });
 });
